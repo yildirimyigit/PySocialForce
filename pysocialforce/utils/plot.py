@@ -63,7 +63,7 @@ class SceneVisualizer:
     """Context for social nav vidualization"""
 
     def __init__(
-        self, scene, output=None, writer="imagemagick", cmap="viridis", agent_colors=None, **kwargs
+        self, scene, output=None, writer="imagemagick", cmap="viridis", agent_colors=None, logging=True, **kwargs
     ):
         self.scene = scene
         self.states, self.group_states = self.scene.get_states()
@@ -72,6 +72,7 @@ class SceneVisualizer:
         self.frames = self.scene.get_length()
         self.output = output
         self.writer = writer
+        self.logging = logging
 
         self.fig, self.ax = plt.subplots(**kwargs)
 
@@ -128,7 +129,8 @@ class SceneVisualizer:
         return self.ani
 
     def __enter__(self):
-        logger.info("Start plotting.")
+        if self.logging:
+            logger.info("Start plotting.")
         self.fig.set_tight_layout(True)
         self.ax.grid(linestyle="dotted")
         self.ax.set_aspect("equal")
@@ -159,15 +161,18 @@ class SceneVisualizer:
             logger.error(
                 f"Exception type: {exception_type}; Exception value: {exception_value}; Traceback: {traceback}"
             )
-        logger.info("Plotting ends.")
+        if self.logging:
+            logger.info("Plotting ends.")
         if self.output:
             if self.ani:
                 output = self.output + ".gif"
-                logger.info(f"Saving animation as {output}")
+                if self.logging:
+                    logger.info(f"Saving animation as {output}")
                 self.ani.save(output, writer=self.writer)
             else:
                 output = self.output + ".png"
-                logger.info(f"Saving plot as {output}")
+                if self.logging:
+                    logger.info(f"Saving plot as {output}")
                 self.fig.savefig(output, dpi=300)
         plt.close(self.fig)
 
@@ -183,7 +188,7 @@ class SceneVisualizer:
         if self.human_actors:
             for i, human in enumerate(self.human_actors):
                 human.center = current_state[i, :2]
-                human.set_radius(0.2)
+                human.set_radius(0.33)
                 # human.set_radius(radius[i])
         else:
             self.human_actors = [

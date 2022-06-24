@@ -92,6 +92,11 @@ class PedState:
     def capped_velocity(desired_velocity, max_velocity):
         """Scale down a desired velocity to its capped speed."""
         desired_speeds = np.linalg.norm(desired_velocity, axis=-1)
+
+        # getting rid of division-by-0
+        epsilon = 0.00001
+        desired_speeds[desired_speeds < epsilon] = epsilon
+
         factor = np.minimum(1.0, max_velocity / desired_speeds)
         factor[desired_speeds == 0] = 0.0
         return desired_velocity * np.expand_dims(factor, -1)

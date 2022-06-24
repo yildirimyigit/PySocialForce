@@ -262,7 +262,7 @@ class SocialForce(Force):
     def _get_force(self):
         lambda_importance = self.config("lambda_importance", 2.0)
         gamma = self.config("gamma", 0.35)
-        n = self.config("n", 2)
+        n = 0.2#self.config("n", 2)
         n_prime = self.config("n_prime", 3)
 
         pos_diff = stateutils.each_diff(self.peds.pos())  # n*(n-1)x2 other - self
@@ -274,9 +274,7 @@ class SocialForce(Force):
         interaction_direction, interaction_length = stateutils.normalize(interaction_vec)
 
         # compute angle theta (between interaction and position difference vector)
-        theta = stateutils.vector_angles(interaction_direction) - stateutils.vector_angles(
-            diff_direction
-        )
+        theta = stateutils.vector_angles(interaction_direction) - stateutils.vector_angles(diff_direction)
         # compute model parameter B = gamma * ||D||
         B = gamma * interaction_length
 
